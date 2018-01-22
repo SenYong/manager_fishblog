@@ -1,0 +1,64 @@
+body, div, span, header, footer, nav, section, aside, article, ul, dl, dt, dd, li, a, p, h1, h2, h3, h4,h5, h6, i, b, textarea, button, input, select, figure, figcaption {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-style: normal;
+  text-decoration: none;
+  border: none;
+  font-family: "Microsoft Yahei",sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-font-smoothing: antialiased;
+}
+textarea { -webkit-appearance: none;}
+html,body,.fillcontain{
+  width: 100%;
+  height: 100%;
+}
+.home{
+   padding: 20px;
+   width: 100%;
+}
+.home p{
+  height: 60px;
+  line-height: 60px;
+}
+.home .comment .commentItem{
+   float: left;
+   width: 25%;
+   text-align: center;
+}
+.home .comment .commentItem div{
+  margin: 5px 0;
+  font-size: 20px;
+  color: #333;
+}
+.home .comment .commentItem .num{
+  color: #777;
+  font-size: 18px;
+}
+.art{
+  margin-top: 20px;
+}
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
