@@ -10,7 +10,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+        '/Article': {
+            target: 'http://www.fishblog.com/index.php?s=Admin',
+            changeOrigin: true,
+            pathRewrite: {
+              '^/Article': '/Article'
+            }
+       }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

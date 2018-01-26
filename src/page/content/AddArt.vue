@@ -18,12 +18,19 @@
 					    <el-form-item label="标签" prop="label">
 					         <el-input v-model="form.label"></el-input>
 					   </el-form-item>
-					   <el-form-item label="图片上传">
-						    <el-upload class="avatar-uploader" :action="imgUrl" :before-upload="beforeAvatarUpload" :on-success="handleAvatarSuccess" name="file">
-							  <img v-if="imageUrl" :src="imageUrl" class="avatar">
-							  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-							</el-upload>
-					   </el-form-item>
+					   <div class="upload">
+					   	  <span>图片上传</span>
+					   	  <div class="uploadImg">
+					   	      <div v-if="image" >
+					   	  	     <img :src="image">
+					   	  	     <input type="file" class="file" @change="onFileChange">
+					   	  	</div>
+					   	  	 <div v-else="image">
+						   	  	<div class="add">+</div>
+						   	  	<input type="file" class="file" @change="onFileChange">
+						   	 </div>
+					   	  </div>
+					   </div>
 					  <el-form-item label="发布时间" prop="newstime">
 						  <div class="block">
 						      <el-date-picker v-model="form.newstime" type="datetime" placeholder="选择发布时间"></el-date-picker>
@@ -42,15 +49,7 @@
 				</el-form>
 			</div>
 		</el-row>
-		<div class="form-group">
-                <label>背景图</label>
-                <input type="file" class="form-control" @change="onFileChange">
-           </div>
-           <div class="form-group" v-if="image">
-	        <label>背景图预览</label>
-	            <img :src="image">
-           </div>
-           <button @click="gets()">sdsda</button>
+		<div>{{file}}</div>
 	</div>
 </template>
 <script type="text/javascript">
@@ -90,7 +89,8 @@
 			      	]
 			      },
 			      imgUrl,
-			      image: ''
+			      image: '',
+			      file: ''
 			}
 		},
 		components: {headTop,quillEditor,imgUrl},
@@ -101,19 +101,42 @@
                 onFileChange: function(e){
                     var files = e.target.files || e.dataTransfer.files;
                     if(!files.length) return;
+                    console.log(files)
                     this.createImage(files[0])
                 },
                 createImage: function(file){
-                    var image = new Image();
-                    var reader = new FileReader();
-                    var vm = this;
-                    reader.onload = (e) => {
-                    	 vm.image =  e.target.result;
-                    }
+                    // var image = new Image();
+                    // var reader = new FileReader();
+                    // var vm = this;
+                    // reader.onload = (e) => {
+                    // 	 vm.image =  e.target.result;
+                    // 	 this.uoloadImg(e.target.result);
+                    // }
+                    // reader.readAsDataURL(file);
+                    console.log(file)
+                    var reader = new FileReader(); 
                     reader.readAsDataURL(file);
+                    var vm = this;
+                    reader.onload = function(e){
+                    	  vm.file = e.target.result
+                    	 
+                    	  var requestObj = null;
+                    	   window.XMLHttpRequest ? requestObj = new XMLHttpRequest() : requestObj = new ActiveXObject;
+                    	   requestObj.open('POST','http://www.fishblog.com/index.php?s=Admin/Article/uploadImg',true);
+                    	   requestObj.onreadystatechange = function(){
+                    	   	  if(requestObj.readyState == 4){
+                    	   	  	if(requestObj.status == 200){
+                    	   	  		console.log(requestObj.response);
+                    	   	  	}
+                    	   	  }
+                    	   }
+                    	    requestObj.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    	   requestObj.send("image="+e.target.result);
+                    }
                 },
-                async gets (){
-                    console.log(await imgUpload({'image': this.image}))            
+                async uoloadImg (file){
+                    var res = JSON.parse(await imgUpload({'image': file}));
+                    console.log(res);
                 },
 
 
@@ -136,35 +159,51 @@
 			        });
 		          }
 		        });
-		     },
-		      handleAvatarSuccess(res, file) {
-                   this.imageUrl = URL.createObjectURL(file.raw);
-                   console.log(res)
-                },
-		      beforeAvatarUpload(file) {
-           //              const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
-			        // const isLt2M = file.size / 1024 / 1024 < 2;
-
-			        // if (!isJPG) {
-			        //   this.$message.error('上传头像图片只能是 JPG 格式!');
-			        // }
-			        // if (!isLt2M) {
-			        //   this.$message.error('上传头像图片大小不能超过 2MB!');
-			        // }
-			        // console.log(file)
-			        // return isJPG && isLt2M;
-			        console.log(file)
-                        var fd = new FormData();
-                        fd.append('file', file);
-                        this.$axios({
-                        	method: 'post',
-                        	url: 'http://www.fishblog.com/index.php?s=admin/Article/uploadImg',
-                           headers: {'Content-Type': 'multipart/form-data'}
-                        }).then( res => {
-                        	 console.log(res)
-                        })
-			        return false;
-                 }
+		     }
 		}
 	}
 </script>
+<style type="text/css">
+     .upload{
+     	  margin-bottom: 20px;
+     }
+	.upload span{
+         color: #606266;
+         font-size: 14px;
+         float: left;
+	}
+	.upload .uploadImg{
+		width: 180px;
+		height: 180px;
+		float: left;
+		margin-left: 20px;
+		border:1px dotted #dcdfe6;
+		position: relative;
+	}
+	.upload:after{
+		content: '.';
+		display: block;
+		height: 0;
+		visibility: hidden;
+		clear: both;
+	}
+	.upload .uploadImg .add{
+		font-size: 30px;
+		height: 180px;
+		line-height: 180px;
+		text-align: center;
+	}
+	.upload .uploadImg .file{
+		position: absolute;
+		top: 0;
+		width: 180px;
+		height: 180px;
+		opacity: 0;
+	}
+	.upload .uploadImg img{
+		display: block;
+		height: 180px;
+		width: 180px;
+	}
+
+</style>
