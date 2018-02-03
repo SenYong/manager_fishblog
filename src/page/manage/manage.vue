@@ -22,8 +22,9 @@
 						<el-menu-item index="ColList">栏目列表</el-menu-item>
 					</el-submenu>
 					<el-submenu index="5">
-						<template slot="title"><i class="el-icon-edit"></i>用户</template>
-						<el-menu-item index="User">用户</el-menu-item>
+						<template slot="title"><i class="el-icon-star-on"></i>用户管理</template>
+						<el-menu-item index="AddUser">添加用户</el-menu-item>
+						<el-menu-item index="UserList">用户列表</el-menu-item>
 					</el-submenu>
 					<el-submenu index="6">
 						<template slot="title"><i class="el-icon-setting"></i>用户互动</template>
@@ -49,7 +50,7 @@
 	export default{
 		computed: {
 			defaultActive: function(){
-                    return this.$route.path.replace('/', '');
+                return this.$route.path.replace('/', '');
 			}
 		}
 	}

@@ -6,9 +6,7 @@
  * baseImgPath: 图片存放地址
  *
 */
-var baseUrl = 'http://www.fishblog.com/index.php'
-var imgUrl = 'http://www.fishblog.com/index.php?s=admin/Article/uploadImg'
+var baseUrl = 'http://www.myblog.com'
 export {
-  baseUrl,
-  imgUrl
+  baseUrl
 }

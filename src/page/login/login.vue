@@ -42,12 +42,11 @@
         }
      },
      created () {
-        this.init();
+        if(sessionStorage.getItem('username')){
+           this.$router.push('/manage');
+        }
      },
      methods:{
-       async init(){
-          //console.log(await verifyImg())
-       },
        async sign (){
           if(this.username == ''){
              alert('用户名不能为空');
@@ -61,7 +60,10 @@
           }
           var res = JSON.parse(await login({username:this.username, password:this.password}));
           if(res.errcode == 0){
-             this.$router.push('manage');
+             console.log(res)
+             sessionStorage.setItem('username',res.username);
+             sessionStorage.setItem('class',res.class);
+             this.$router.push('/manage');
           }
        }
      }

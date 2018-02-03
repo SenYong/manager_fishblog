@@ -1,7 +1,7 @@
 <template>
 	<div class="header">
 		<div class="header_top">
-			<el-dropdown @command="handleCommand" menu-align='start'>
+			<el-dropdown @command="newCommand" menu-align='start'>
 			    	<span class="el-dropdown-link">
 	                     新消息<i class="new">33</i><i class="el-icon-caret-bottom el-icon--right"></i>
 	                </span>
@@ -12,16 +12,16 @@
 					<el-dropdown-item command="singout">留言板<i class="new">33</i></el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
-			<el-dropdown @command="handleCommand" menu-align='start'>
+			<el-dropdown @command="stateCommand" menu-align='start'>
 				<img src="../../assets/images/a1.jpg" class="avator">
 				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item command="home">首页</el-dropdown-item>
-					<el-dropdown-item command="singout">退出</el-dropdown-item>
+					<el-dropdown-item command="1">首页</el-dropdown-item>
+					<el-dropdown-item command="2">退出</el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
           </div>
           <div class="header_bottom">
-          	      <el-breadcrumb separator="/">
+          	  <el-breadcrumb separator="/">
 			  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
 			  <el-breadcrumb-item>活动管理</el-breadcrumb-item>
 			  <el-breadcrumb-item>活动列表</el-breadcrumb-item>
@@ -36,17 +36,30 @@
 		data() {
 			return {}
 		},
+		created () {
+			if(!sessionStorage.getItem('username')){
+				this.$router.push('/');
+			}
+		},
 		methods:{
-		    handleCommand(){
-
+		    newCommand(command){
+              this.$message('click on item ' + command);
+		    },
+		    stateCommand(command){
+              if(command == 1){
+                 
+              }else{
+              	 sessionStorage.clear();
+              	 this.$router.push('/')
+              }
 		    }
 		}
 	}
 </script>
 <style type="text/css">
      .header{
-     	   height: 60px;
-     	   background-color: #EFF2F7;
+     	height: 60px;
+     	background-color: #EFF2F7;
      }
 	.header_top{
 		height: 60px;
