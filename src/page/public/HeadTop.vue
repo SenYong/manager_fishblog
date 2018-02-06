@@ -13,7 +13,8 @@
 				</el-dropdown-menu>
 			</el-dropdown>
 			<el-dropdown @command="stateCommand" menu-align='start'>
-				<img src="../../assets/images/a1.jpg" class="avator">
+			    <img v-if="logo" :src="baseUrl+logo" class="avator">
+				<img v-else src="../../assets/images/a1.jpg" class="avator">
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item command="1">首页</el-dropdown-item>
 					<el-dropdown-item command="2">退出</el-dropdown-item>
@@ -22,24 +23,24 @@
           </div>
           <div class="header_bottom">
           	  <el-breadcrumb separator="/">
-			  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-			  <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-			  <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-			  <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-			</el-breadcrumb>
+				  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+				  <el-breadcrumb-item v-for="(item, index) in $route.meta">{{item}}</el-breadcrumb-item>
+			  </el-breadcrumb>
           </div>
 	</div>
 </template>
 
 <script type="text/javascript">
+    import { baseUrl } from '../../config/env';
 	export default{
 		data() {
-			return {}
+			return {
+				logo:'',
+				baseUrl
+			}
 		},
 		created () {
-			if(!sessionStorage.getItem('username')){
-				this.$router.push('/');
-			}
+			sessionStorage.getItem('username') ? this.logo = sessionStorage.getItem('logo') : this.$router.push('/');
 		},
 		methods:{
 		    newCommand(command){

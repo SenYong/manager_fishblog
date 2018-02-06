@@ -12,7 +12,7 @@
                     <span>图片上传</span>
                     <div class="uploadImg">
                       <div v-if="form.image" >
-                          <img :src="form.image">
+                          <img :src="baseUrl+form.image">
                           <input type="file" class="file" @change="onFileChange">
                       </div>
                       <div v-else="form.image">
@@ -31,7 +31,7 @@
                 </el-form-item>
                 <el-form-item>
                    <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
-                   <el-button>取消</el-button>
+                   <el-button @click="cancel">取消</el-button>
                 </el-form-item>
             </el-form>
           </div>
@@ -47,7 +47,7 @@
                     <span>图片上传</span>
                     <div class="uploadImg">
                       <div v-if="form.image" >
-                          <img :src="form.image">
+                          <img :src="baseUrl + form.image">
                           <input type="file" class="file" @change="onFileChange">
                       </div>
                       <div v-else="form.image">
@@ -65,8 +65,8 @@
                     <el-switch v-model="form.open"></el-switch>
                 </el-form-item>
                 <el-form-item>
-                   <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
-                   <el-button>取消</el-button>
+                   <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
+                   <el-button @click="cancel">取消</el-button>
                 </el-form-item>
             </el-form>
           </div>
@@ -76,7 +76,8 @@
 
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
-    import { sayImgUpload, addSay, getOneSay } from '../../api/getData';
+    import { sayImgUpload, addSay, getOneSay, updateSay } from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
       data () {
          return {
@@ -95,7 +96,9 @@
               ]
             },
             imageUrl: '',
-            show: true
+            show: true,
+            baseUrl,
+            id: ""
          }
       },
       components: {headTop},
@@ -112,7 +115,7 @@
         async getData (id) {
            var res = JSON.parse(await(getOneSay({id})));
            if(res.errcode == 0){
-              console.log(res )
+              this.id = res.data.s_id;
               this.form.name = res.data.s_content;
               this.form.image = res.data.s_img;
               this.form.newstime = new Date(res.data.s_time * 1000);
@@ -125,7 +128,6 @@
         onFileChange: function(e){
            var files = e.target.files || e.dataTransfer.files;
            if(!files.length) return;
-           console.log(files);
            this.createImage(files[0]);
         },
         createImage: function(file){
@@ -140,7 +142,7 @@
         async uploadImg(image){
            var res = JSON.parse(await sayImgUpload({image}));
            if(res.errcode == 0){
-              this.imageUrl = res.filepath;
+              this.form.image = res.filepath;
               this.$message({ showClose: true, type: 'success', message: res.msg })
            }else{
               this.$message({ showClose: true, type: 'error', message: res.msg });
@@ -151,13 +153,22 @@
           this.$refs[formName].validate(async(valid) => {
             if (valid) {
               if(sessionStorage.getItem('username')){
+                if(sessionStorage.getItem('class') !== '1'){
+                  this.$message({ type: 'warning', message: '您暂时还没有添加说说权限' });
+                  return false;
+                }
                 var data = {};
                 data.s_content = this.form.name;
-                data.s_img = this.imageUrl;
+                data.s_img = this.form.image;
                 data.s_time = this.form.newstime.getTime() / 1000;
                 data.s_show = this.form.open ? 1 : 0;
                 data.s_root = sessionStorage.getItem('username');
-                var res = JSON.parse(await addSay(data));
+                if(this.id){
+                   data.s_id = this.id;
+                   var res = JSON.parse(await updateSay(data));
+                }else{
+                   var res = JSON.parse(await addSay(data));
+                }
                 res.errcode == 0 ? this.$router.push('/SayList') : this.$message.error(res.msg);
               }else{
                 this.$router.push("/");
@@ -166,6 +177,10 @@
                this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
             }
           });
+        },
+        //取消
+        cancel(){
+          this.$router.push('/SayList');
         }
       }
     }

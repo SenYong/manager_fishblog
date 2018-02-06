@@ -60,9 +60,9 @@
           }
           var res = JSON.parse(await login({username:this.username, password:this.password}));
           if(res.errcode == 0){
-             console.log(res)
-             sessionStorage.setItem('username',res.username);
-             sessionStorage.setItem('class',res.class);
+             sessionStorage.setItem('username', res.username);
+             sessionStorage.setItem('logo', res.logo);
+             sessionStorage.setItem('class', res.class);
              this.$router.push('/manage');
           }
        }

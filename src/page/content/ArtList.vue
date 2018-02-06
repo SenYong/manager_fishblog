@@ -14,9 +14,9 @@
                     <span>{{ scope.row.a_name }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="描述">
+                <el-table-column label="说说图片">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.a_keyword }}</span>
+                    <img :src="baseUrl+scope.row.a_img" class="userlogo">
                   </template>
                 </el-table-column>
                 <el-table-column label="日期">
@@ -59,24 +59,28 @@
             </template>
         </div>
         <div class="page">
-          <el-pagination background @current-change="handleCurrentChange" current-page.sync="5" :page-size="10" layout="total, prev, pager, next" :total="total"></el-pagination>
+          <el-pagination background @current-change="handleCurrentChange"  :page-size="10" layout="total, prev, pager, next" :total="total"></el-pagination>
         </div>
     </div>
 </template>
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
     import { getArt, delArt } from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
         data () {
             return {
               tableData: [],
               total: 10,
               num: 0,
-              page: 10
+              page: 10,
+              baseUrl,
+              currentPage:1
             }
         },
         components: {headTop},
         created () {
+            if(this.$route.query.num) this.num = this.$route.query.num;
             this.init(this.num,this.page);
         },
         methods: {
@@ -103,27 +107,29 @@
                var minute = date.getMinutes() + ':';
                var second = date.getSeconds();
                return year + month + day + hours + minute + second;
- 
             },
             //分页
             handleCurrentChange(val) {
-               this.init(val - 1, this.page);
+               this.currentPage = val;
+               this.num = val - 1;
+               this.init(this.num, this.page);
             },
             //编辑
             handleEdit(index, row){
-               this.$router.push({
-                  path: '/AddArt',
-                  query: {id: row.a_id}
-               });
+               sessionStorage.getItem('class') === '1' ? this.$router.push({ path: '/AddArt', query: {id: row.a_id, num: this.num} }) : this.$message({ type: 'warning', message: '您暂时还没有编辑文章权限'})
             },
             //删除
             async handleDelete(index, row){
-              var res = JSON.parse(await delArt({'id': row.a_id}));
-              if(res.errcode == 0){
-                this.$message({ type: 'success', message: res.msg });
-                this.tableData.splice(index,1);
+              if(sessionStorage.getItem('class') === '1'){
+                  var res = JSON.parse(await delArt({'id': row.a_id}));
+                  if(res.errcode == 0){
+                    this.$message({ type: 'success', message: res.msg });
+                    this.tableData.splice(index,1);
+                  }else{
+                    this.$message({ type: 'error', message: res.msg });
+                  }
               }else{
-                this.$message({ type: 'error', message: res.msg });
+                  this.$message({ type: 'warning', message: '您暂时还没有删除文章权限' });
               }
             }
         }

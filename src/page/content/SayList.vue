@@ -16,7 +16,7 @@
                 </el-table-column>
                 <el-table-column label="说说图片">
                   <template slot-scope="scope">
-                    <img :src="scope.row.s_img" alt="">
+                    <img :src="baseUrl+scope.row.s_img" class="userlogo">
                   </template>
                 </el-table-column>
                 <el-table-column label="日期" width="180">
@@ -58,11 +58,13 @@
 
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
-    import { getSay } from '../../api/getData';
+    import { getSay, deleteSay } from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
         data () {
             return {
-                tableData: []
+                tableData: [],
+                baseUrl
             }
         },
         components: { headTop },
@@ -96,10 +98,20 @@
             },
             //编辑
             handleEdit (index, row){
-              this.$router.push({
-                 path: '/AddSay',
-                 query: {id: row.s_id}
-              });
+              sessionStorage.getItem('class') === '1' ? this.$router.push({ path: '/AddSay', query: {id: row.s_id}}) : this.$message({ type: 'warning', message: '您暂时还没有编辑说说权限' })
+            },
+            async handleDelete(index, row){
+              if(sessionStorage.getItem('class') === '1'){
+                 var res = JSON.parse(await deleteSay({'id': row.s_id}));
+                 if(res.errcode == 0){
+                    this.tableData.splice(index,1);
+                    this.$message({ type: 'success', message: res.msg });
+                 }else{
+                     this.$message({ type: 'error', message: res.msg });
+                 }
+              }else{
+                 this.$message({ type: 'warning', message: '您暂时还没有删除说说权限' });
+              }
             }
         }
     }

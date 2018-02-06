@@ -14,19 +14,24 @@
                     <span>{{ scope.row.l_name }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="日期">
+                <el-table-column label="图片" width="100">
+                  <template slot-scope="scope">
+                    <img :src="baseUrl+scope.row.l_img" class="userlogo">
+                  </template>
+                </el-table-column>
+                <el-table-column label="日期" width="150">
                   <template slot-scope="scope">
                     <span>{{ scope.row.l_time }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="是否公开">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.l_show }}</span>
+                    <span>{{ scope.row.l_show ? '是' : '否' }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="是否原创">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.l_original }}</span>
+                    <span>{{ scope.row.l_original ? '是' : '否' }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="发表人">
@@ -57,11 +62,13 @@
 </template>
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
-     import {getLog} from '../../api/getData';
+    import {getLog, deleteLog} from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
         data(){
             return{
-               tableData:[]
+               tableData:[],
+               baseUrl
             }
         },
         components:{headTop},
@@ -71,7 +78,6 @@
         methods:{
            async init(){
              var res = JSON.parse(await getLog());
-             console.log(res)
              if(res.errcode == 0){
                 this.tableData = [];
                 for(var i = 0; i < res.data.length; i++){
@@ -90,14 +96,24 @@
                var minute = date.getMinutes() + ':';
                var second = date.getSeconds();
                return year + month + day + hours + minute + second;
-
            },
            //编辑
            handleEdit(index,row){
-             this.$router.push({
-                path: '/AddLog',
-                query: {id: row.l_id}
-             })
+             sessionStorage.getItem('class') === '1' ?  this.$router.push({ path: '/AddLog', query: {id: row.l_id} }) : this.$message({ type: 'warning', message: '您暂时还没有编辑日志权限' });
+           },
+           //删除
+           async handleDelete(index,row){
+             if(sessionStorage.getItem('class') === '1'){
+                var res = JSON.parse(await deleteLog({id: row.l_id}));
+                if(res.errcode == 0){
+                  this.tableData.splice(index,1);
+                  this.$message({ type: 'success', message: res.msg });
+                }else{
+                  this.$message({ type: 'error', message: res.msg });
+                }
+             }else{
+                this.$message({ type: 'warning', message: '您暂时还没有删除日志权限'});
+             }
            }
         }
     }

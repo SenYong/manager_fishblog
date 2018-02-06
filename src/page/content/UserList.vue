@@ -16,12 +16,14 @@
                 </el-table-column>
                 <el-table-column label="用户头像">
                   <template slot-scope="scope">
-                    <img :src="scope.row.u_logo">
+                    <img :src="baseUrl+scope.row.u_logo" class="userlogo">
                   </template>
                 </el-table-column>
                 <el-table-column label="权限">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.u_class == 2 ? '编辑' : '游客'}}</span>
+                    <span v-if="scope.row.u_class == 1">最高管理员</span>
+                    <span v-else-if="scope.row.u_class == 2">编辑</span>
+                    <span v-else>游客</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="邮箱">
@@ -76,8 +78,8 @@
            this.init();
         },
         methods:{
-           async init(){
-              var res = JSON.parse(await UserList());
+           async init(){  
+              var res = JSON.parse(await UserList({'uclass':sessionStorage.getItem('class')}));
               if(res.errcode == 0){
                  this.tableData = [];
                  for(var i = 0; i < res.data.length; i++){

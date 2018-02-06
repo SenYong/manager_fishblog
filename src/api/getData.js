@@ -71,6 +71,16 @@ export const getSay = () => fetch('s=Admin/Say/selectSay', {}, 'post');
 export const getOneSay = data => fetch('s=Admin/Say/getOneSay', data, 'post');
 
 /*
+ * 修改说说
+ */
+export const updateSay = data => fetch('s=Admin/Say/updateSay', data, 'post');
+
+/*
+ * 删除说说
+ */
+export const deleteSay = data => fetch('s=Admin/Say/deleteSay', data, 'post');
+
+/*
  * 新增栏目
  */
 export const addCat = data => fetch('s=Admin/Cat/addCat', data, 'post');
@@ -111,6 +121,16 @@ export const getLog = () => fetch('s=Admin/Log/selectLog', {}, 'post');
 export const getOneLog = data => fetch('s=Admin/Log/getOneLog', data, 'post');
 
 /*
+ * 修改日志 
+ */
+export const updateLog = data => fetch('s=Admin/Log/updateLog', data, 'post');
+
+/*
+ * 删除日志
+ */
+export const deleteLog = data => fetch('s=Admin/Log/deleteLog', data, 'post');
+
+/*
  * 添加用户
  */
 export const addUser = data => fetch('s=Admin/User/addUser', data, 'post');
@@ -118,7 +138,7 @@ export const addUser = data => fetch('s=Admin/User/addUser', data, 'post');
 /*
  * 用户列表
  */
-export const UserList = () => fetch('s=Admin/User/selectUser', {}, 'post');
+export const UserList = data => fetch('s=Admin/User/selectUser', data, 'post');
 
 /*
  * 获取用户个人信息
@@ -139,3 +159,8 @@ export const updateUser = data => fetch('s=Admin/User/updateUser', data, 'post')
  * 删除用户
  */
 export const delUser = data => fetch('s=Admin/User/deleteUser', data, 'post');
+
+/*
+ * 系统设置
+ */
+export const systemImgUpload = data => fetch('s=Admin/System/uploadImg',data, 'post');

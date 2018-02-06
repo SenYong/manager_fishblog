@@ -15,7 +15,7 @@
                       <span>头像上传</span>
                       <div class="uploadImg">
                           <div v-if="form.image" >
-                              <img :src="form.image">
+                              <img :src="baseUrl+form.image">
                               <input type="file" class="file" @change="onFileChange">
                           </div>
                           <div v-else="form.image">
@@ -49,6 +49,19 @@
             <div class="el-col el-col-12 el-col-offset-4">
               <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
                   <input type="hidden" value="form.id">
+                  <div class="upload">
+                      <span>头像修改</span>
+                      <div class="uploadImg">
+                          <div v-if="form.image" >
+                              <img :src="baseUrl+form.image">
+                              <input type="file" class="file" @change="onFileChange">
+                          </div>
+                          <div v-else="form.image">
+                              <div class="add">+</div>
+                              <input type="file" class="file" @change="onFileChange">
+                          </div>
+                      </div>
+                  </div>
                   <el-form-item label="权限" prop="class">
                       <el-select v-model="form.class" placeholder="请分配用户权限">
                            <el-option :label="item.name" :value="item.id" v-for="(item,index) in classList"></el-option>
@@ -59,7 +72,7 @@
                   </el-form-item>
                   <el-form-item>
                      <el-button type="primary" @click="editUser('ruleForm')">立即修改</el-button>
-                     <el-button>取消</el-button>
+                     <el-button @click="cancel">取消</el-button>
                   </el-form-item>
               </el-form>
             </div>
@@ -69,6 +82,7 @@
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
     import { addUser, getUserInfo, updateUser, userLogoUpload } from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
        data(){
          return{
@@ -101,7 +115,8 @@
                ]
             },
             classList:[ {id:1, name:'最高管理员'}, {id:2, name:'编辑'}, {id:3, name:'游客'} ],
-            imageUrl: ''
+            imageUrl: '',
+            baseUrl
          }
        },
        components:{headTop},
@@ -119,6 +134,7 @@
              var res = JSON.parse(await getUserInfo({id}));
              if(res.errcode == 0){
                 this.form.id = res.data.u_id;
+                this.form.image = res.data.u_logo;
                 this.form.class = res.data.u_class;
                 this.form.email = res.data.u_email;   
              }else{
@@ -135,7 +151,6 @@
             this.createImage(files[0]);
           },
           createImage: function(file){
-             console.log(file)
              var reader = new FileReader();
              reader.onload = (e) =>{
                 this.form.image = e.target.result;
@@ -145,9 +160,8 @@
           },
           async uploadImg(image){
              var res = JSON.parse(await userLogoUpload({image}));
-             console.log(res)
              if(res.errcode == 0){
-                this.imageUrl = res.filename;
+                this.form.image = res.filename;
                 this.$message({type:'success', message:res.msg});
              }else{
                 this.$message({type:'error', message:res.msg});
@@ -159,10 +173,7 @@
               if (valid) {
                 if(sessionStorage.getItem('username')){
                   if(sessionStorage.getItem('class')!=='1'){
-                     this.$message({
-                       type:'warning',
-                       message:"您暂时还没有添加用户权限"
-                     });
+                     this.$message({ type:'warning', message:"您暂时还没有添加用户权限" });
                      return false;
                   }
                   var data = {};
@@ -178,7 +189,7 @@
                   this.$router.push("/");
                 }
               } else {
-                 this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
+                  this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
               }
             });
           },
@@ -188,6 +199,7 @@
                 if(valid){
                    var data = {};
                    data.u_id = this.form.id;
+                   data.u_logo = this.form.image;
                    data.u_class = this.form.class;
                    data.u_email = this.form.email;
                    var res = JSON.parse(await updateUser(data));
@@ -201,6 +213,10 @@
                    this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
                 }
              });
+          },
+          //取消
+          cancel(){
+             this.$router.push('/UserList');
           }
        }
     }

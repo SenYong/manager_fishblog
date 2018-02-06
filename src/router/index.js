@@ -15,6 +15,7 @@ const AddCol = r => require.ensure([], () => r(require('../page/content/AddCol')
 const ColList = r => require.ensure([], () => r(require('../page/content/ColList')), 'ColList');
 const AddUser = r => require.ensure([], () => r(require('../page/content/AddUser')), 'AddUser');
 const UserList = r => require.ensure([], () => r(require('../page/content/UserList')), 'UserList');
+const Explain = r => require.ensure([], () => r(require('../page/content/Explain')), 'Explain');
 
 export default new Router({
   routes: [
@@ -70,6 +71,10 @@ export default new Router({
           path: '/UserList',
           component: UserList,
           meta: ['用户管理', '用户列表']
+        },{
+          path: '/Explain',
+          component: Explain,
+          meta: ['系统设置', '个人中心']
         }]
 
     }

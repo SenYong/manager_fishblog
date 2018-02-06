@@ -96,19 +96,20 @@
           },
           //编辑
           handleEdit (index, row){
-            this.$router.push({
-              path: '/AddCol',
-              query: { id: row.c_id}
-            })
+             sessionStorage.getItem('class') === '1' ? this.$router.push({ path: '/AddCol', query: { id: row.c_id} }) : this.$message({ type: 'warning', message: '您暂时还没有编辑栏目权限' })
           },
           //删除
           async handleDelete(index, row){
-             var res = JSON.parse(await delCat({'id': row.c_id}));
-             if(res.errcode == 0){
-               this.$message({type: 'success', message: res.msg});
-               this.tableData.splice(index,1);
+             if(sessionStorage.getItem('class') === '1'){
+               var res = JSON.parse(await delCat({'id': row.c_id}));
+               if(res.errcode == 0){
+                 this.$message({type: 'success', message: res.msg});
+                 this.tableData.splice(index,1);
+               }else{
+                 this.$message({type: 'error', message: res.msg});
+               }
              }else{
-               this.$message({type: 'error', message: res.msg});
+               this.$message({ type: 'warning', message: '您暂时还没有删除栏目权限' });
              }
           }
        }

@@ -23,7 +23,7 @@
 					   	  <span>图片上传</span>
 					   	  <div class="uploadImg">
 					   	      <div v-if="form.image" >
-					   	  	     <img :src="form.image">
+					   	  	     <img :src="baseUrl+form.image">
 					   	  	     <input type="file" class="file" @change="onFileChange">
 					   	  	</div>
 					   	  	 <div v-else="form.image">
@@ -45,7 +45,7 @@
 					  </el-form-item>
 					  <el-form-item>
 						   <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
-						   <el-button>取消</el-button>
+						   <el-button @click="cancel">取消</el-button>
 					  </el-form-item>
 				</el-form>
 			</div>
@@ -73,7 +73,7 @@
                       <span>图片上传</span>
                       <div class="uploadImg">
                           <div v-if="form.image" >
-                             <img :src="form.image">
+                             <img :src="baseUrl+form.image">
                              <input type="file" class="file" @change="onFileChange">
                         </div>
                          <div v-else>
@@ -94,8 +94,8 @@
                         <el-switch v-model="form.original"></el-switch>
                   </el-form-item>
                   <el-form-item>
-                       <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
-                       <el-button>取消</el-button>
+                       <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
+                       <el-button @click="cancel">取消</el-button>
                   </el-form-item>
             </el-form>
         </div>
@@ -106,6 +106,7 @@
 	import headTop from '../public/HeadTop';
 	import { quillEditor } from 'vue-quill-editor';
 	import { artCat, imgUpload, addArt, getOneArt, updateArt } from '../../api/getData';
+  import { baseUrl } from '../../config/env';
 	export default{
 		data () {
 			return {
@@ -139,13 +140,16 @@
 			      	]
 			    },
           show: true,
-          id: ""
+          id: "",
+          baseUrl,
+          num:0
 			}
 		},
 		components: {headTop,quillEditor},
 		created () {
       if(this.$route.query.id){
          this.show = false; 
+         this.num = this.$route.query.num;
          this.getData(this.$route.query.id);
       }else{
          this.show = true;
@@ -192,7 +196,6 @@
             var reader = new FileReader();
             var vm = this;
             reader.onload = (e) => {
-            	 this.form.image =  e.target.result;
             	 this.uploadImg(e.target.result);
             }
             reader.readAsDataURL(file);
@@ -200,7 +203,7 @@
         async uploadImg (file){
             var res = JSON.parse(await imgUpload({'image': file}));
             if(res.errcode == 0){
-               this.imageUrl = res.filepath;
+               this.form.image = res.filepath;
                this.$message({
                  message: res.msg,
                  type: 'success'
@@ -221,12 +224,16 @@
           this.$refs[formName].validate(async (valid) => {
             if (valid) {
                  if(sessionStorage.getItem('username')){
+                    if(sessionStorage.getItem('class') !== '1'){
+                      this.$message({ type: 'warning', message: '您暂时还没有添加文章权限' });
+                      return false;
+                    }
                     var data = {};
                     data.a_name = this.form.name;
                     data.pid = this.form.region;
                     data.a_desc = this.form.desc;
                     data.a_keyword = this.form.label;
-                    data.a_img = this.imageUrl ? this.imageUrl : this.form.image;
+                    data.a_img = this.form.image;
                     data.a_time = this.form.newstime.getTime() / 1000;
                     data.a_show = this.form.open ? 1 : 0;
                     data.a_original = this.form.original ? 1 : 0;
@@ -237,7 +244,7 @@
                     }else{
                       var res = JSON.parse(await addArt(data));
                     } 
-                    res.errcode == 0 ? this.$router.push('/ArtList') : this.$message.error(res.msg);
+                    res.errcode == 0 ? this.$router.push({path:'/ArtList', query:{num: this.num}}) : this.$message.error(res.msg);
                  }else{
                     this.$router.push("/");
                  }
@@ -245,6 +252,10 @@
                 this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
             }
         });
+      },
+      //取消
+      cancel(){
+        this.$router.push({ path: '/ArtList', query: {num: this.num} });
       }
 		}
 	}

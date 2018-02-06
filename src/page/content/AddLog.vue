@@ -15,10 +15,10 @@
                         <span>图片上传</span>
                         <div class="uploadImg">
                             <div v-if="form.image" >
-                                <img :src="form.image">
+                                <img :src="baseUrl+form.image">
                                 <input type="file" class="file" @change="onFileChange">
                             </div>
-                            <div v-else="form.image">
+                            <div v-else>
                                 <div class="add">+</div>
                                 <input type="file" class="file" @change="onFileChange">
                             </div>
@@ -37,7 +37,48 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="cancel">取消</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-row>
+        <!-- 编辑 -->
+        <el-row  class="art" v-else>
+          <div class="el-col el-col-12 el-col-offset-4">
+                <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
+                    <el-form-item label="日志标题" prop="name">
+                        <el-input v-model="form.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="描述" prop="desc">
+                        <el-input type="textarea" v-model="form.desc"></el-input>
+                    </el-form-item>
+                    <div class="upload">
+                        <span>图片上传</span>
+                        <div class="uploadImg">
+                            <div v-if="form.image" >
+                                <img :src="baseUrl+form.image">
+                                <input type="file" class="file" @change="onFileChange">
+                            </div>
+                            <div v-else>
+                                <div class="add">+</div>
+                                <input type="file" class="file" @change="onFileChange">
+                            </div>
+                        </div>
+                    </div>
+                    <el-form-item label="发布时间" prop="newstime">
+                        <div class="block">
+                            <el-date-picker v-model="form.newstime" type="datetime" placeholder="选择发布时间"></el-date-picker>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="是否公开" prop="open">
+                        <el-switch v-model="form.open"></el-switch>
+                    </el-form-item>
+                    <el-form-item label="是否原创" prop="original">
+                        <el-switch v-model="form.original"></el-switch>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
+                        <el-button @click="cancel">取消</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -46,7 +87,8 @@
 </template>
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
-    import {logImgUpload, addLog, getOneLog} from '../../api/getData';
+    import {logImgUpload, addLog, getOneLog, updateLog} from '../../api/getData';
+    import { baseUrl } from '../../config/env';
     export default{
         data(){
             return{
@@ -71,12 +113,14 @@
                 },
                 imageUrl:"",
                 show:true,
-                id:""
+                id:"",
+                baseUrl
             }
         },
         components:{headTop},
         created(){
            if(this.$route.query.id){
+              this.show = false;
               this.getData(this.$route.query.id);
            }else{
               this.show = true;
@@ -86,8 +130,8 @@
            //获取日志详情
            async getData(id){
               var res = JSON.parse(await getOneLog({id}));
-              console.log(res);
               if(res.errcode == 0){
+                this.id = res.data.l_id;
                 this.form.name = res.data.l_name;
                 this.form.desc = res.data.l_desc;
                 this.form.image = res.data.l_img;
@@ -112,8 +156,9 @@
            },
            async uploadImg(image){
               var res = JSON.parse(await logImgUpload({image}));
+              console.log(res)
               if(res.errcode == 0){
-                this.imageUrl = res.filename;
+                this.form.image = res.filename;
                 this.$message({type:'success', message:res.msg});
               }else{
                 this.$message({type:'error', message:res.msg});
@@ -124,6 +169,10 @@
               this.$refs[formName].validate(async (valid) => {
                 if (valid) {
                      if(sessionStorage.getItem('username')){
+                        if(sessionStorage.getItem('class') !== '1'){
+                          this.$message({ type:'warning', message:'您暂时还没有添加日志权限' });
+                          return false;
+                        }
                         var data = {};
                         data.l_name = this.form.name;
                         data.l_desc = this.form.desc;
@@ -133,8 +182,8 @@
                         data.l_original = this.form.original ? 1 : 0;
                         data.l_root = sessionStorage.getItem('username');
                         if(this.id){
-                          data.a_id = this.id;
-                          var res = JSON.parse(await updateArt(data));
+                          data.l_id = this.id;
+                          var res = JSON.parse(await updateLog(data));
                         }else{
                           var res = JSON.parse(await addLog(data));
                         } 
@@ -146,6 +195,10 @@
                     this.$notify.error({ title: '错误', message: '请检查输入是否正确', offset: 100 });
                 }
             });
+          },
+          //取消
+          cancel(){
+             this.$router.push('/LogList');
           }
         }
     }
