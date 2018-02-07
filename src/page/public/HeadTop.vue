@@ -3,13 +3,13 @@
 		<div class="header_top">
 			<el-dropdown @command="newCommand" menu-align='start'>
 			    	<span class="el-dropdown-link">
-	                     新消息<i class="new">33</i><i class="el-icon-caret-bottom el-icon--right"></i>
+	                     新消息<i class="new">{{allNum}}</i><i class="el-icon-caret-bottom el-icon--right"></i>
 	                </span>
 				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item command="home">说说<i class="new">33</i></el-dropdown-item>
-					<el-dropdown-item command="singout">文章<i class="new">33</i></el-dropdown-item>
-					<el-dropdown-item command="singout">日志<i class="new">33</i></el-dropdown-item>
-					<el-dropdown-item command="singout">留言板<i class="new">33</i></el-dropdown-item>
+					<el-dropdown-item command="/ArtList">文章<i class="new">{{numList.artNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/SayList">说说<i class="new">{{numList.sayNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/LogList">日志<i class="new">{{numList.logNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="singout">留言板<i class="new">{{numList.boardNum}}</i></el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
 			<el-dropdown @command="stateCommand" menu-align='start'>
@@ -32,19 +32,32 @@
 
 <script type="text/javascript">
     import { baseUrl } from '../../config/env';
+    import { publishNum } from '../../api/getData';
 	export default{
 		data() {
 			return {
 				logo:'',
-				baseUrl
+				baseUrl,
+                numList: [],
+                allNum: 0
 			}
 		},
 		created () {
 			sessionStorage.getItem('username') ? this.logo = sessionStorage.getItem('logo') : this.$router.push('/');
+            this.init();
 		},
 		methods:{
+            async init(){
+               var res = JSON.parse(await publishNum());
+               if(res.errcode == 0){
+                  this.numList = res.data;
+                  this.allNum = parseInt(res.data.artNum) + parseInt(res.data.sayNum) + parseInt(res.data.logNum) + parseInt(res.data.boardNum);
+               }else{
+                  this.$message({type: 'error', message: res.msg});
+               }
+            },
 		    newCommand(command){
-              this.$message('click on item ' + command);
+              this.$router.push(command);
 		    },
 		    stateCommand(command){
               if(command == 1){

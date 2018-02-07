@@ -84,6 +84,8 @@
                     res.data[i]['l_time'] = this.timestampToTime(res.data[i]['l_time']);
                 }
                 this.tableData = res.data;
+             }else{
+               this.$message({type:'error', message:res.msg});
              }
            },
            //时间戳转换成时间

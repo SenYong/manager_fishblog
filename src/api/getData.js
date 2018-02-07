@@ -3,7 +3,7 @@ import fetch from '../config/fetch';
 /*
 * 验证码
 */
-export const verifyImg = () => fetch('s=Admin/index/checkVerify');
+export const verifyImg = () => fetch('s=Admin/Login/verify', {}, 'get');
 
 /*
 * 登陆
@@ -161,6 +161,31 @@ export const updateUser = data => fetch('s=Admin/User/updateUser', data, 'post')
 export const delUser = data => fetch('s=Admin/User/deleteUser', data, 'post');
 
 /*
- * 系统设置
+ * 系统设置图片上传
  */
 export const systemImgUpload = data => fetch('s=Admin/System/uploadImg',data, 'post');
+
+/*
+ * 添加系统设置
+ */
+export const addSystem = data => fetch('s=Admin/System/addSystem', data, 'post');
+
+/*
+ * 获取系统设置列表
+ */
+export const getSystemList = () => fetch('s=Admin/System/getSystemList', {}, 'post');
+
+/*
+ * 获取系统详情
+ */
+export const getOneSystem = data => fetch('s=Admin/System/getOneSystem', data, 'post');
+
+/*
+ * 修改系统设置
+ */
+export const updateSystem = data => fetch('s=Admin/System/updateSystem', data, 'post');
+
+/*
+ * 删除系统详情
+ */
+export const delSystem = data => fetch('s=Admin/System/delSystem', data, 'post');
