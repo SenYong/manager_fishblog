@@ -36,17 +36,17 @@
 		},
 		components: { headTop },
 		mounted () {
-               this.init(); 
+           this.init(); 
 		},
 		methods: {
-               async init(){
-                  var res = JSON.parse(await publishNum());
-                  if(res.errcode == 0){
-                      this.allNum = res.data;
-                  }else{
-                  	this.$message.error(res.msg);
-                  }
-               }
+           async init(){
+              var res = JSON.parse(await publishNum());
+              if(res.errcode == 0){
+                  this.allNum = res.data;
+              }else{
+              	this.$message.error(res.msg);
+              }
+           }
 		}
 	}
 </script>

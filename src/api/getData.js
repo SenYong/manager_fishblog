@@ -189,3 +189,14 @@ export const updateSystem = data => fetch('s=Admin/System/updateSystem', data, '
  * 删除系统详情
  */
 export const delSystem = data => fetch('s=Admin/System/delSystem', data, 'post');
+
+/*
+ * 文章评论
+ */
+export const getArtComment = () => fetch('s=Admin/Article/getArtComment', {}, 'post');
+
+/*
+ * 获取单个文章评论
+ */
+export const getOneArtComment = data => fetch('s=Admin/Article/getOneArtComment', data, 'post');
+

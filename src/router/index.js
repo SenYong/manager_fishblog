@@ -15,6 +15,8 @@ const AddCol = r => require.ensure([], () => r(require('../page/content/AddCol')
 const ColList = r => require.ensure([], () => r(require('../page/content/ColList')), 'ColList');
 const AddUser = r => require.ensure([], () => r(require('../page/content/AddUser')), 'AddUser');
 const UserList = r => require.ensure([], () => r(require('../page/content/UserList')), 'UserList');
+const ArtComment = r => require.ensure([], () => r(require('../page/content/ArtComment')), 'ArtComment');
+const replyArt = r => require.ensure([], () => r(require('../page/content/replyArt')), 'replyArt');
 const Explain = r => require.ensure([], () => r(require('../page/content/Explain')), 'Explain');
 const ExplainList = r => require.ensure([], () => r(require('../page/content/ExplainList')), 'ExplainList');
 
@@ -72,6 +74,14 @@ export default new Router({
           path: '/UserList',
           component: UserList,
           meta: ['用户管理', '用户列表']
+        },{
+          path: '/ArtComment',
+          component: ArtComment,
+          meta: ['用户互动', '文章评论']
+        },{
+          path: '/replyArt',
+          component: replyArt,
+          meta: ['用户互动', '文章评论回复']
         },{
           path: '/Explain',
           component: Explain,
