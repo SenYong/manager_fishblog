@@ -26,12 +26,12 @@
                 </el-table-column>
                 <el-table-column label="是否公开">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.a_show }}</span>
+                    <span>{{ scope.row.a_show ? '是' : '否' }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="是否原创">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.a_original }}</span>
+                    <span>{{ scope.row.a_original ? '是' : '否' }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="发表人">

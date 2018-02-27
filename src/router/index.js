@@ -17,6 +17,12 @@ const AddUser = r => require.ensure([], () => r(require('../page/content/AddUser
 const UserList = r => require.ensure([], () => r(require('../page/content/UserList')), 'UserList');
 const ArtComment = r => require.ensure([], () => r(require('../page/content/ArtComment')), 'ArtComment');
 const replyArt = r => require.ensure([], () => r(require('../page/content/replyArt')), 'replyArt');
+const SayComment = r => require.ensure([], () => r(require('../page/content/SayComment')), 'SayComment');
+const replySay = r => require.ensure([], () => r(require('../page/content/replySay')), 'replySay');
+const LogComment = r => require.ensure([], () => r(require('../page/content/LogComment')), 'LogComment');
+const replyLog = r => require.ensure([], () => r(require('../page/content/replyLog')), 'replyLog');
+const BoardComment = r => require.ensure([], () => r(require('../page/content/BoardComment')), 'BoardComment');
+const replyBoard = r => require.ensure([], () => r(require('../page/content/replyBoard')), 'replyBoard');
 const Explain = r => require.ensure([], () => r(require('../page/content/Explain')), 'Explain');
 const ExplainList = r => require.ensure([], () => r(require('../page/content/ExplainList')), 'ExplainList');
 
@@ -82,6 +88,30 @@ export default new Router({
           path: '/replyArt',
           component: replyArt,
           meta: ['用户互动', '文章评论回复']
+        },{
+          path: '/SayComment',
+          component: SayComment,
+          meta: ['用户互动','说说评论']
+        },{
+          path: '/replySay',
+          component: replySay,
+          meta: ['用户互动', '说说评论回复']
+        },{
+          path: '/LogComment',
+          component: LogComment,
+          meta: ['用户互动', '日志评论']
+        },{
+          path: '/replyLog',
+          component: replyLog,
+          meta: ['用户互动', '日志评论回复']
+        },{
+          path: '/BoardComment',
+          component: BoardComment,
+          meta: ['用户互动', '留言板']
+        },{
+          path: '/replyBoard',
+          component: replyBoard,
+          meta: ['用户互动', '留言板回复']
         },{
           path: '/Explain',
           component: Explain,

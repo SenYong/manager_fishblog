@@ -63,7 +63,7 @@ export const addSay = data => fetch('s=Admin/Say/addSay', data, 'post');
 /*
  * 获取所有说说
  */
-export const getSay = () => fetch('s=Admin/Say/selectSay', {}, 'post');
+export const getSay = data => fetch('s=Admin/Say/selectSay', data, 'post');
 
 /*
  * 获取单条说说
@@ -191,7 +191,7 @@ export const updateSystem = data => fetch('s=Admin/System/updateSystem', data, '
 export const delSystem = data => fetch('s=Admin/System/delSystem', data, 'post');
 
 /*
- * 文章评论
+ * 文章评论列表
  */
 export const getArtComment = () => fetch('s=Admin/Article/getArtComment', {}, 'post');
 
@@ -200,3 +200,52 @@ export const getArtComment = () => fetch('s=Admin/Article/getArtComment', {}, 'p
  */
 export const getOneArtComment = data => fetch('s=Admin/Article/getOneArtComment', data, 'post');
 
+/*
+ * 回复文章评论
+ */
+export const replyArts = data => fetch('s=Admin/Article/replyArt', data, 'post');
+
+/*
+ * 说说评论列表
+ */
+export const getSayComment = () => fetch('s=Admin/Say/getSayComment', {}, 'post');
+
+/*
+ * 获取单个说说评论
+ */
+export const getOneSayComment = data => fetch('s=Admin/Say/getOneSayComment', data, 'post');
+
+/*
+ * 回复说说评论
+ */
+export const replySays = data => fetch('s=Admin/Say/replySay', data, 'post');
+
+/*
+ * 日志评论列表
+ */
+export const getLogComment = () => fetch('s=Admin/Log/getLogComment', {}, 'post');
+
+/*
+ * 获取单个日志评论
+ */
+export const getOneLogComment = data => fetch('s=Admin/Log/getOneLogComment', data, 'post');
+
+/*
+ * 回复日志评论
+ */
+export const replyLogs = data => fetch('s=Admin/Log/replyLog', data, 'post');
+
+/*
+ * 日志留言板列表
+ */
+export const getBoardComment = () => fetch('s=Admin/Board/getBoardComment', {}, 'post');
+
+/*
+ * 获取单个留言内容
+ */
+export const getOneBoardComment = data => fetch('s=Admin/Board/getOneBoardComment', data, 'post');
+
+/*
+ * 留言板回复
+ */
+export const replyBoards = data => fetch('s=Admin/Board/replyBoard', data, 'post');

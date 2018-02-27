@@ -43,6 +43,7 @@
 					  <el-form-item label="是否原创" prop="original">
 					        <el-switch v-model="form.original"></el-switch>
 					  </el-form-item>
+                      <quill-editor ref="myTextEditor" v-model="content" :config="editorOption"></quill-editor>
 					  <el-form-item>
 						   <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
 						   <el-button @click="cancel">取消</el-button>
@@ -103,10 +104,13 @@
 	</div>
 </template>
 <script type="text/javascript">
+    import 'quill/dist/quill.core.css'
+    import 'quill/dist/quill.snow.css'
+    import 'quill/dist/quill.bubble.css'
 	import headTop from '../public/HeadTop';
 	import { quillEditor } from 'vue-quill-editor';
 	import { artCat, imgUpload, addArt, getOneArt, updateArt } from '../../api/getData';
-  import { baseUrl } from '../../config/env';
+    import { baseUrl } from '../../config/env';
 	export default{
 		data () {
 			return {
@@ -123,26 +127,18 @@
 			    catList: [],
 			    imageUrl: '',
 			    rules: {
-			      	name: [
-			      	   {required: true, message: '请输入文章标题', trigger: 'blur'}
-			      	],
-			      	region: [
-			      	   {required: true, message: '请选择栏目', trigger: 'blur'}
-			      	],
-			      	desc: [
-                 {required: true, message: '请输入描述', trigger: 'blur'}
-			      	],
-			      	label: [
-                 {required: true, message: '请输入文章标签', trigger: 'blur'}
-			      	],
-			      	newstime: [
-                 {required: true, message: '请选择发布时间', trigger: 'blur'}
-			      	]
+			      	name: [ {required: true, message: '请输入文章标题', trigger: 'blur'} ],
+			      	region: [ {required: true, message: '请选择栏目', trigger: 'blur'} ],
+			      	desc: [ {required: true, message: '请输入描述', trigger: 'blur'} ],
+			      	label: [ {required: true, message: '请输入文章标签', trigger: 'blur'} ],
+			      	newstime: [ {required: true, message: '请选择发布时间', trigger: 'blur'} ]
 			    },
-          show: true,
-          id: "",
-          baseUrl,
-          num:0
+                show: true,
+                id: "",
+                baseUrl,
+                num:0,
+                content:'',
+                editorOption: {}
 			}
 		},
 		components: {headTop,quillEditor},
@@ -244,7 +240,12 @@
                     }else{
                       var res = JSON.parse(await addArt(data));
                     } 
-                    res.errcode == 0 ? this.$router.push({path:'/ArtList', query:{num: this.num}}) : this.$message.error(res.msg);
+                    if(res.errcode == 0){
+                       this.$message({type:'success', message:res.msg}); 
+                       this.$router.push({path:'/ArtList', query:{num: this.num}})
+                    }else{
+                       this.$message.error(res.msg);
+                    }
                  }else{
                     this.$router.push("/");
                  }
@@ -260,50 +261,17 @@
 		}
 	}
 </script>
-<style type="text/css">
- .upload{
- 	  margin-bottom: 20px;
+<style scoped>
+.quill-editor {
+ height: 465px;
+ width: 500px;
+} 
+ .ql-container {
+ height: 400px;
  }
-.upload span{
-       color: #606266;
-       font-size: 14px;
-       float: left;
-}
-.upload .uploadImg{
-	width: 180px;
-	height: 180px;
-	float: left;
-	margin-left: 20px;
-	border:1px dotted #dcdfe6;
-	position: relative;
-}
-.upload:after{
-	content: '.';
-	display: block;
-	height: 0;
-	visibility: hidden;
-	clear: both;
-}
-.upload .uploadImg .add{
-	font-size: 30px;
-	height: 180px;
-	line-height: 180px;
-	text-align: center;
-}
-.upload .uploadImg .file{
-	position: absolute;
-	top: 0;
-	width: 180px;
-	height: 180px;
-	opacity: 0;
-}
-.upload .uploadImg img{
-	display: block;
-	height: 180px;
-	width: 180px;
-}
 
 </style>
+
 
 <!-- 
 JS 格林威治时间格式（GMT)与普通时间格式的互相转换: http://blog.csdn.net/shuaizi96/article/details/73610599

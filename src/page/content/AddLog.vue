@@ -187,7 +187,12 @@
                         }else{
                           var res = JSON.parse(await addLog(data));
                         } 
-                        res.errcode == 0 ? this.$router.push('/LogList') : this.$message.error(res.msg);
+                        if(res.errcode == 0){
+                           this.$message({type:'success', message:res.msg});
+                           this.$router.push('/LogList') 
+                        }else{
+                           this.$message.error(res.msg);
+                        } 
                      }else{
                         this.$router.push("/");
                      }
@@ -203,47 +208,3 @@
         }
     }
 </script>
-<style type="text/css">
-.upload{
-   margin-bottom: 20px;
-}
-.upload span{
-   color: #606266;
-   font-size: 14px;
-   float: left;
-}
-.upload .uploadImg{
-    width: 180px;
-    height: 180px;
-    float: left;
-    margin-left: 20px;
-    border:1px dotted #dcdfe6;
-    position: relative;
-}
-.upload:after{
-    content: '.';
-    display: block;
-    height: 0;
-    visibility: hidden;
-    clear: both;
-}
-.upload .uploadImg .add{
-    font-size: 30px;
-    height: 180px;
-    line-height: 180px;
-    text-align: center;
-}
-.upload .uploadImg .file{
-    position: absolute;
-    top: 0;
-    width: 180px;
-    height: 180px;
-    opacity: 0;
-}
-.upload .uploadImg img{
-    display: block;
-    height: 180px;
-    width: 180px;
-}
-
-</style>

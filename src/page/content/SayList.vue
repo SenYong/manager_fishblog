@@ -11,7 +11,7 @@
                 </el-table-column>
                 <el-table-column label="说说内容" width="200">
                   <template slot-scope="scope">
-                    <span>{{scope.row.s_content}}</span>
+                     <span v-html="emoji(scope.row.s_content)"></span>
                   </template>
                 </el-table-column>
                 <el-table-column label="说说图片">
@@ -26,7 +26,7 @@
                 </el-table-column>
                 <el-table-column label="是否公开">
                   <template slot-scope="scope">
-                    <span>{{scope.row.s_show}}</span>
+                    <span>{{scope.row.s_show ? '是' : '否'}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="发表人">
@@ -53,6 +53,9 @@
               </el-table>
             </template>
         </div>
+        <div class="page">
+          <el-pagination background @current-change="handleCurrentChange"  :page-size="10" layout="total, prev, pager, next" :total="total"></el-pagination>
+        </div>
     </div>
 </template>
 
@@ -64,17 +67,23 @@
         data () {
             return {
                 tableData: [],
-                baseUrl
+                total: 10,
+                num: 0,
+                page: 10,
+                baseUrl,
+                currentPage:1
             }
         },
         components: { headTop },
         created () {
-           this.init();
+            if(this.$route.query.num) this.num = this.$route.query.num;
+            this.init(this.num,this.page);
         },
         methods: {
-           async init () { 
-              var res = JSON.parse(await getSay());
+            async init(num,page) { 
+              var res = JSON.parse(await getSay({'num': num * page, page}));
               if(res.errcode == 0){
+                 this.total = res.total;
                  this.tableData = [];
                  for(var i = 0; i < res.data.length; i++){
                    res.data[i]['s_time'] = this.timestampToTime(res.data[i]['s_time']);
@@ -83,8 +92,8 @@
               }else{
                  this.$message({ type: 'error', message: res.msg });
               }
-           },
-           //时间戳转换成时间
+            },
+            //时间戳转换成时间
             timestampToTime (time) {
                var date = new Date(time * 1000);
                var year = date.getFullYear() + '-';
@@ -96,9 +105,15 @@
                return year + month + day + hours + minute + second;
  
             },
+            //分页
+            handleCurrentChange(val) {
+               this.currentPage = val;
+               this.num = val - 1;
+               this.init(this.num, this.page);
+            },
             //编辑
             handleEdit (index, row){
-              sessionStorage.getItem('class') === '1' ? this.$router.push({ path: '/AddSay', query: {id: row.s_id}}) : this.$message({ type: 'warning', message: '您暂时还没有编辑说说权限' })
+              sessionStorage.getItem('class') === '1' ? this.$router.push({ path: '/AddSay', query: {id: row.s_id, num: this.num}}) : this.$message({ type: 'warning', message: '您暂时还没有编辑说说权限' })
             },
             async handleDelete(index, row){
               if(sessionStorage.getItem('class') === '1'){
@@ -116,3 +131,22 @@
         }
     }
 </script>
+
+<style>
+  .page{
+    padding: 20px;
+    float: right;
+  }
+  .demo-table-expand{
+    font-size: 0;
+  }
+  .demo-table-expand label{
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item{
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+</style>

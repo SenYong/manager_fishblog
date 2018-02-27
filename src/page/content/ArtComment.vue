@@ -29,6 +29,11 @@
                     <span>{{ scope.row.ac_time }}</span>
                   </template>
                 </el-table-column>
+                <el-table-column label="评论内容">
+                  <template slot-scope="scope">
+                    <span>{{ scope.row.ac_content }}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column label="地址">
                   <template slot-scope="scope">
                     <span>{{ scope.row.ac_ip }}</span>
@@ -46,7 +51,8 @@
                 </el-table-column>
                 <el-table-column label="回复内容">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.ac_recontent ? scope.row.ac_recontent : '无' }}</span>
+                    <span v-html="emoji(scope.row.ac_recontent)" v-if="scope.row.ac_recontent"></span>
+                    <span v-else>无</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="回复时间">
@@ -90,15 +96,30 @@
               var res = JSON.parse(await getArtComment());
               console.log(res.data)
               if(res.errcode == 0){
+                 for(var i = 0; i < res.data.length; i++){
+                    res.data[i]['ac_time'] = this.timestampToTime(res.data[i]['ac_time']);
+                 }
                  this.tableData = res.data;
               }else{
-
+                 this.$message.error(res.msg); 
               }
            },
-            //编辑
-            handleEdit(index, row){
-               sessionStorage.getItem('class') === '1' ? this.$router.push({path: '/replyArt', query:{id: row.ac_id}}) : this.$message({ type: 'warning', message:'您暂时还没有回复文章评论权限' });
-            }
+           //时间戳转换成时间
+           timestampToTime(time){
+              var date = new Date(time * 1000);
+              var years = date.getFullYear() + '-';
+              var months = (date.getMonth() + 1 < 10 ? '0' + date.getMonth() + 1 : date.getMonth()) + 1 + '-';
+              var days = date.getDate() + ' ';
+              var hours = date.getHours() + ':';
+              var minutes = date.getMinutes() + ':';
+              var seconds = date.getSeconds();
+              return years + months + days + hours + minutes + seconds;
+           },
+           //编辑
+           handleEdit(index, row){
+              console.log(row)
+              sessionStorage.getItem('class') === '1' ? this.$router.push({path: '/replyArt', query:{id: row.ac_id}}) : this.$message({ type: 'warning', message:'您暂时还没有回复文章评论权限' });
+           }
         }
     }
 </script>

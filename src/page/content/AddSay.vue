@@ -5,8 +5,18 @@
       <el-row  class="art" v-if="show">
          <div class="el-col el-col-12 el-col-offset-4">
             <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="这刻想法" prop="name">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="这刻想法" prop="name" id="box">
+                  <el-input type="textarea" :autosize="{ minRows: 10, maxRows: 20}" placeholder="请输入内容" resize="none" v-model="form.name"></el-input>
+                  <div class="icon clearfix">
+                    <i class="icon iconfont icon-face" @click="showEmoji = !showEmoji"></i>
+                    <transition name="fade" mode="">
+                       <div class="emoji-box" v-if="showEmoji" >
+                          <el-button  class="pop-close"  :plain="true"  type="danger"  size="mini" icon="close" @click="showEmoji = false"></el-button>
+                          <vue-emoji @select="selectEmoji"></vue-emoji>
+                          <span class="pop-arrow arrow"></span>
+                       </div>       
+                    </transition>
+                  </div>
                 </el-form-item>
                 <div class="upload">
                     <span>图片上传</span>
@@ -40,8 +50,18 @@
       <el-row  class="art" v-else>
          <div class="el-col el-col-12 el-col-offset-4">
             <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="这刻想法" prop="name">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="这刻想法" prop="name" id="box">
+                  <el-input type="textarea" :autosize="{ minRows: 10, maxRows: 20}" placeholder="请输入内容" resize="none" v-model="form.name"></el-input>
+                  <div class="icon clearfix">
+                    <i class="icon iconfont icon-face" @click="showEmoji = !showEmoji"></i>
+                    <transition name="fade" mode="">
+                       <div class="emoji-box" v-if="showEmoji" >
+                          <el-button  class="pop-close"  :plain="true"  type="danger"  size="mini" icon="close" @click="showEmoji = false"></el-button>
+                          <vue-emoji @select="selectEmoji"></vue-emoji>
+                          <span class="pop-arrow arrow"></span>
+                       </div>       
+                    </transition>
+                  </div>
                 </el-form-item>
                 <div class="upload">
                     <span>图片上传</span>
@@ -76,6 +96,7 @@
 
 <script type="text/javascript">
     import headTop from '../public/HeadTop';
+    import vueEmoji from '../../components/emoji.vue';
     import { sayImgUpload, addSay, getOneSay, updateSay } from '../../api/getData';
     import { baseUrl } from '../../config/env';
     export default{
@@ -88,23 +109,22 @@
                open: ''
             },
             rules: {
-              name: [
-                {required: true, message: '请说说你这一刻的想法', trigger: 'blur'}
-              ],
-              newstime: [
-                {required: true, message: '请选择发布时间', trigger: 'blur'}
-              ]
+              name: [ {required: true, message: '请说说你这一刻的想法', trigger: 'blur'} ],
+              newstime: [ {required: true, message: '请选择发布时间', trigger: 'blur'} ]
             },
             imageUrl: '',
             show: true,
             baseUrl,
-            id: ""
+            id: "",
+            showEmoji: false,
+            num: 0
          }
       },
-      components: {headTop},
+      components: {headTop, vueEmoji},
       created() {
         if(this.$route.query.id){
           this.show = false;
+          this.num = this.$route.query.num;
           this.getData(this.$route.query.id)
         }else{
           this.show = true;
@@ -148,6 +168,11 @@
               this.$message({ showClose: true, type: 'error', message: res.msg });
            }
         },
+        //自定义事件,父组件与子组件之间的通讯
+        selectEmoji(code){
+          this.showEmoji = false;
+          this.form.name += code
+        },
         //提交
         onSubmit(formName) {
           this.$refs[formName].validate(async(valid) => {
@@ -169,7 +194,12 @@
                 }else{
                    var res = JSON.parse(await addSay(data));
                 }
-                res.errcode == 0 ? this.$router.push('/SayList') : this.$message.error(res.msg);
+                if(res.errcode == 0){
+                   this.$message({type:'success', message:res.msg});
+                   this.$router.push({ path: '/SayList', query: {num: this.num} });
+                }else{
+                   this.$message.error(res.msg);
+                }
               }else{
                 this.$router.push("/");
               }
@@ -180,52 +210,9 @@
         },
         //取消
         cancel(){
-          this.$router.push('/SayList');
+          this.$router.push({ path: '/SayList', query: {num: this.num} });
         }
       }
     }
 </script>
-<style type="text/css">
-.upload{
-  margin-bottom: 20px;
-}
-.upload span{
-  color: #606266;
-  font-size: 14px;
-  float: left;
-}
-.upload .uploadImg{
-  width: 180px;
-  height: 180px;
-  float: left;
-  margin-left: 20px;
-  border:1px dotted #dcdfe6;
-  position: relative;
-}
-.upload:after{
-  content: '.';
-  display: block;
-  height: 0;
-  visibility: hidden;
-  clear: both;
-}
-.upload .uploadImg .add{
-  font-size: 30px;
-  height: 180px;
-  line-height: 180px;
-  text-align: center;
-}
-.upload .uploadImg .file{
-  position: absolute;
-  top: 0;
-  width: 180px;
-  height: 180px;
-  opacity: 0;
-}
-.upload .uploadImg img{
-  display: block;
-  height: 180px;
-  width: 180px;
-}
-
-</style>
+<style lang="scss"> @import '../../assets/scss/emoji.scss'; </style>

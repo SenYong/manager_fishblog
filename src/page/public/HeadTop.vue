@@ -6,10 +6,10 @@
 	                     新消息<i class="new">{{allNum}}</i><i class="el-icon-caret-bottom el-icon--right"></i>
 	                </span>
 				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item command="/ArtList">文章<i class="new">{{numList.artNum}}</i></el-dropdown-item>
-					<el-dropdown-item command="/SayList">说说<i class="new">{{numList.sayNum}}</i></el-dropdown-item>
-					<el-dropdown-item command="/LogList">日志<i class="new">{{numList.logNum}}</i></el-dropdown-item>
-					<el-dropdown-item command="singout">留言板<i class="new">{{numList.boardNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/Artcomment">文章<i class="new">{{numList.artNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/Saycomment">说说<i class="new">{{numList.sayNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/Logcomment">日志<i class="new">{{numList.logNum}}</i></el-dropdown-item>
+					<el-dropdown-item command="/Boardcomment">留言板<i class="new">{{numList.boardNum}}</i></el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>
 			<el-dropdown @command="stateCommand" menu-align='start'>
