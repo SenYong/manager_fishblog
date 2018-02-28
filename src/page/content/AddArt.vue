@@ -43,7 +43,11 @@
 					  <el-form-item label="是否原创" prop="original">
 					        <el-switch v-model="form.original"></el-switch>
 					  </el-form-item>
-                      <quill-editor ref="myTextEditor" v-model="content" :config="editorOption"></quill-editor>
+                      <el-form-item label="文章内容" prop="content">
+                           <div class="quill-wrap">
+                                <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+                           </div>
+                      </el-form-item>
 					  <el-form-item>
 						   <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
 						   <el-button @click="cancel">取消</el-button>
@@ -94,6 +98,9 @@
                   <el-form-item label="是否原创" prop="original">
                         <el-switch v-model="form.original"></el-switch>
                   </el-form-item>
+                  <el-form-item label="文章内容" prop="content">
+                        <quill-editor ref="myTextEditor" v-model="form.content" :config="editorOption"  @change="onEditorChange($event)"></quill-editor>
+                  </el-form-item>
                   <el-form-item>
                        <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
                        <el-button @click="cancel">取消</el-button>
@@ -108,7 +115,9 @@
     import 'quill/dist/quill.snow.css'
     import 'quill/dist/quill.bubble.css'
 	import headTop from '../public/HeadTop';
-	import { quillEditor } from 'vue-quill-editor';
+	import { quillEditor, Quill } from 'vue-quill-editor';
+    import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module';
+    Quill.register('modules/ImageExtend', ImageExtend)
 	import { artCat, imgUpload, addArt, getOneArt, updateArt } from '../../api/getData';
     import { baseUrl } from '../../config/env';
 	export default{
@@ -122,7 +131,8 @@
                   image: '',
 			      newstime: '',
 			      open: '',
-                  original: ''
+                  original: '',
+                  content: ''
 			    },
 			    catList: [],
 			    imageUrl: '',
@@ -137,8 +147,34 @@
                 id: "",
                 baseUrl,
                 num:0,
-                content:'',
-                editorOption: {}
+                editorOption: {
+                   modules: {
+                      ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
+                         loading: true,
+                         name: 'img',  // 图片参数名
+                         action: "http://www.myblog.com/?s=Admin/Article/editor",  // 服务器地址, 如果action为空，则采用base64插入图片
+                         // response 为一个函数用来获取服务器返回的具体图片地址
+                         // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
+                         // 则 return res.data.url
+                         response: (res) => {
+                            console.log(res)
+                            return res.data;
+                         },
+                         change: (xhr, formData) => {
+                            // xhr.setRequestHeader('myHeader','myValue')
+                            //formData.append('token', 'myToken')
+                         } // 可选参数 每次选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+                      },
+                      toolbar: {  // 如果不上传图片到服务器，此处不必配置
+                         container: container,  // container为工具栏，此次引入了全部工具栏，也可自行配置
+                         handlers: {
+                             'image': function (value) {  // 劫持原来的图片点击按钮事件
+                                 QuillWatch.emit(this.quill.id)
+                             }
+                         }
+                      }
+                   } 
+                }
 			}
 		},
 		components: {headTop,quillEditor},
@@ -166,6 +202,7 @@
              this.form.newstime =  new Date(res.data.a_time * 1000);
              this.form.open = !! res.data.a_show;
              this.form.original = !! res.data.a_original;
+             this.form.content = res.data.a_content;
           }else{ 
              this.$message.error(res.msg);
           }
@@ -209,14 +246,18 @@
             }
         },
         //初始化获取栏目
-  			async init(){
-  			   const res = JSON.parse(await artCat());
-  			   if(res.errcode == 0){
-  			   	 this.catList = res.data;
-  			   }
-  			},
+		async init(){
+		   const res = JSON.parse(await artCat());
+		   if(res.errcode == 0){
+		   	 this.catList = res.data;
+		   }
+		},
+        //编辑器内容改变
+        onEditorChange(event){
+           
+        },
         //表单提交
-  	   onSubmit(formName) {
+  	    onSubmit(formName) {
           this.$refs[formName].validate(async (valid) => {
             if (valid) {
                  if(sessionStorage.getItem('username')){
@@ -233,6 +274,7 @@
                     data.a_time = this.form.newstime.getTime() / 1000;
                     data.a_show = this.form.open ? 1 : 0;
                     data.a_original = this.form.original ? 1 : 0;
+                    data.a_content = this.form.content;
                     data.a_root = sessionStorage.getItem('username');
                     if(this.id){
                       data.a_id = this.id;
@@ -262,13 +304,16 @@
 	}
 </script>
 <style scoped>
-.quill-editor {
- height: 465px;
- width: 500px;
+.quill-editor 
+{
+  height: 465px;
+  width: 700px;
+  margin-bottom:150px;
 } 
- .ql-container {
- height: 400px;
- }
+.ql-container 
+{
+  height: 400px;
+}
 
 </style>
 
