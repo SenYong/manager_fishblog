@@ -158,12 +158,8 @@
                          // 则 return res.data.url
                          response: (res) => {
                             console.log(res)
-                            return res.data;
-                         },
-                         change: (xhr, formData) => {
-                            // xhr.setRequestHeader('myHeader','myValue')
-                            //formData.append('token', 'myToken')
-                         } // 可选参数 每次选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+                            return baseUrl + res.url;
+                         }
                       },
                       toolbar: {  // 如果不上传图片到服务器，此处不必配置
                          container: container,  // container为工具栏，此次引入了全部工具栏，也可自行配置
@@ -246,16 +242,12 @@
             }
         },
         //初始化获取栏目
-		async init(){
-		   const res = JSON.parse(await artCat());
-		   if(res.errcode == 0){
-		   	 this.catList = res.data;
-		   }
-		},
-        //编辑器内容改变
-        onEditorChange(event){
-           
-        },
+      	async init(){
+      	   const res = JSON.parse(await artCat());
+      	   if(res.errcode == 0){
+      	   	 this.catList = res.data;
+      	   }
+      	},
         //表单提交
   	    onSubmit(formName) {
           this.$refs[formName].validate(async (valid) => {
