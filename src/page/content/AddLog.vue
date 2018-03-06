@@ -1,7 +1,7 @@
 <template>
     <div class="AddLog">
       <head-top></head-top>
-        <!-- 新增 -->
+      <!-- 新增 -->
       <el-row  class="art" v-if="show">
           <div class="el-col el-col-12 el-col-offset-4">
                 <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
@@ -34,6 +34,11 @@
                     </el-form-item>
                     <el-form-item label="是否原创" prop="original">
                         <el-switch v-model="form.original"></el-switch>
+                    </el-form-item>
+                    <el-form-item label="文章内容" prop="content">
+                        <div class="quill-wrap">
+                            <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+                        </div>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
@@ -76,6 +81,11 @@
                     <el-form-item label="是否原创" prop="original">
                         <el-switch v-model="form.original"></el-switch>
                     </el-form-item>
+                    <el-form-item label="文章内容" prop="content">
+                        <div class="quill-wrap">
+                            <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+                        </div>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
                         <el-button @click="cancel">取消</el-button>
@@ -86,7 +96,13 @@
     </div>
 </template>
 <script type="text/javascript">
+    import 'quill/dist/quill.core.css'
+    import 'quill/dist/quill.snow.css'
+    import 'quill/dist/quill.bubble.css'
     import headTop from '../public/HeadTop';
+    import { quillEditor, Quill } from 'vue-quill-editor';
+    import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module';
+    Quill.register('modules/ImageExtend', ImageExtend);
     import {logImgUpload, addLog, getOneLog, updateLog} from '../../api/getData';
     import { baseUrl } from '../../config/env';
     export default{
@@ -98,7 +114,8 @@
                    image:"",
                    newstime:"",
                    open:false,
-                   original:false
+                   original:false,
+                   content: ''
                 },
                 rules:{
                    name:[
@@ -114,10 +131,33 @@
                 imageUrl:"",
                 show:true,
                 id:"",
-                baseUrl
+                baseUrl,
+                editorOption: {
+                   modules: {
+                      ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
+                         loading: true,
+                         name: 'img',  // 图片参数名
+                         action: baseUrl + "?s=Admin/Log/editor",  // 服务器地址, 如果action为空，则采用base64插入图片
+                         // response 为一个函数用来获取服务器返回的具体图片地址
+                         // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
+                         // 则 return res.data.url
+                         response: (res) => {
+                            return baseUrl + res.url;
+                         }
+                      },
+                      toolbar: {  // 如果不上传图片到服务器，此处不必配置
+                         container: container,  // container为工具栏，此次引入了全部工具栏，也可自行配置
+                         handlers: {
+                             'image': function (value) {  // 劫持原来的图片点击按钮事件
+                                 QuillWatch.emit(this.quill.id)
+                             }
+                         }
+                      }
+                  } 
+              }
             }
         },
-        components:{headTop},
+        components:{headTop,quillEditor},
         created(){
            if(this.$route.query.id){
               this.show = false;
@@ -138,6 +178,7 @@
                 this.form.newstime = new Date(res.data.l_time * 1000);
                 this.form.open = !!res.data.l_show;
                 this.form.original = !!res.data.l_original;
+                this.form.content = res.data.l_content;
               }
            },
            //图片上传
@@ -181,6 +222,7 @@
                         data.l_show = this.form.open ? 1 : 0;
                         data.l_original = this.form.original ? 1 : 0;
                         data.l_root = sessionStorage.getItem('username');
+                        data.l_content = this.form.content;
                         if(this.id){
                           data.l_id = this.id;
                           var res = JSON.parse(await updateLog(data));
@@ -208,3 +250,14 @@
         }
     }
 </script>
+<style scoped>
+.quill-editor{
+  height: 465px;
+  width: 700px;
+  margin-bottom:150px;
+} 
+.ql-container{
+  height: 400px;
+}
+</style>
+

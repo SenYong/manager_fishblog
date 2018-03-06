@@ -38,16 +38,16 @@
 						  </div>
 					  </el-form-item>
 					  <el-form-item label="是否公开" prop="open">
-					        <el-switch v-model="form.open"></el-switch>
+					      <el-switch v-model="form.open"></el-switch>
 					  </el-form-item>
 					  <el-form-item label="是否原创" prop="original">
-					        <el-switch v-model="form.original"></el-switch>
+					      <el-switch v-model="form.original"></el-switch>
 					  </el-form-item>
-                      <el-form-item label="文章内容" prop="content">
-                           <div class="quill-wrap">
-                                <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
-                           </div>
-                      </el-form-item>
+            <el-form-item label="文章内容" prop="content">
+                <div class="quill-wrap">
+                    <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+                </div>
+            </el-form-item>
 					  <el-form-item>
 						   <el-button type="primary" @click="onSubmit('ruleForm')">立即创建</el-button>
 						   <el-button @click="cancel">取消</el-button>
@@ -98,8 +98,10 @@
                   <el-form-item label="是否原创" prop="original">
                         <el-switch v-model="form.original"></el-switch>
                   </el-form-item>
-                  <el-form-item label="文章内容" prop="content">
-                        <quill-editor ref="myTextEditor" v-model="form.content" :config="editorOption"  @change="onEditorChange($event)"></quill-editor>
+                 <el-form-item label="文章内容" prop="content">
+                    <div class="quill-wrap">
+                        <quill-editor v-model="form.content" ref="myQuillEditor" :options="editorOption"></quill-editor>
+                    </div>
                   </el-form-item>
                   <el-form-item>
                        <el-button type="primary" @click="onSubmit('ruleForm')">修改</el-button>
@@ -114,13 +116,13 @@
     import 'quill/dist/quill.core.css'
     import 'quill/dist/quill.snow.css'
     import 'quill/dist/quill.bubble.css'
-	import headTop from '../public/HeadTop';
-	import { quillEditor, Quill } from 'vue-quill-editor';
+	  import headTop from '../public/HeadTop';
+	  import { quillEditor, Quill } from 'vue-quill-editor';
     import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module';
-    Quill.register('modules/ImageExtend', ImageExtend)
-	import { artCat, imgUpload, addArt, getOneArt, updateArt } from '../../api/getData';
+    Quill.register('modules/ImageExtend', ImageExtend);
+	  import { artCat, imgUpload, addArt, getOneArt, updateArt } from '../../api/getData';
     import { baseUrl } from '../../config/env';
-	export default{
+	  export default{
 		data () {
 			return {
 				form: {
@@ -128,11 +130,11 @@
 			      region: '',
 			      desc: '',
 			      label:'',
-                  image: '',
+            image: '',
 			      newstime: '',
 			      open: '',
-                  original: '',
-                  content: ''
+            original: '',
+            content: ''
 			    },
 			    catList: [],
 			    imageUrl: '',
@@ -143,34 +145,33 @@
 			      	label: [ {required: true, message: '请输入文章标签', trigger: 'blur'} ],
 			      	newstime: [ {required: true, message: '请选择发布时间', trigger: 'blur'} ]
 			    },
-                show: true,
-                id: "",
-                baseUrl,
-                num:0,
-                editorOption: {
-                   modules: {
-                      ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
-                         loading: true,
-                         name: 'img',  // 图片参数名
-                         action: "http://www.myblog.com/?s=Admin/Article/editor",  // 服务器地址, 如果action为空，则采用base64插入图片
-                         // response 为一个函数用来获取服务器返回的具体图片地址
-                         // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
-                         // 则 return res.data.url
-                         response: (res) => {
-                            console.log(res)
-                            return baseUrl + res.url;
-                         }
-                      },
-                      toolbar: {  // 如果不上传图片到服务器，此处不必配置
-                         container: container,  // container为工具栏，此次引入了全部工具栏，也可自行配置
-                         handlers: {
-                             'image': function (value) {  // 劫持原来的图片点击按钮事件
-                                 QuillWatch.emit(this.quill.id)
-                             }
-                         }
-                      }
-                   } 
+          show: true,
+          id: "",
+          baseUrl,
+          num:0,
+          editorOption: {
+             modules: {
+                ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
+                   loading: true,
+                   name: 'img',  // 图片参数名
+                   action: baseUrl + "?s=Admin/Article/editor",  // 服务器地址, 如果action为空，则采用base64插入图片
+                   // response 为一个函数用来获取服务器返回的具体图片地址
+                   // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
+                   // 则 return res.data.url
+                   response: (res) => {
+                      return baseUrl + res.url;
+                   }
+                },
+                toolbar: {  // 如果不上传图片到服务器，此处不必配置
+                   container: container,  // container为工具栏，此次引入了全部工具栏，也可自行配置
+                   handlers: {
+                       'image': function (value) {  // 劫持原来的图片点击按钮事件
+                           QuillWatch.emit(this.quill.id)
+                       }
+                   }
                 }
+            } 
+        }
 			}
 		},
 		components: {headTop,quillEditor},
@@ -296,17 +297,14 @@
 	}
 </script>
 <style scoped>
-.quill-editor 
-{
+.quill-editor {
   height: 465px;
   width: 700px;
   margin-bottom:150px;
 } 
-.ql-container 
-{
+.ql-container{
   height: 400px;
 }
-
 </style>
 
 
