@@ -2,29 +2,29 @@ import Vue from 'vue'
 import Router from 'vue-router'
 Vue.use(Router)
 
-const login = r => require.ensure([], () => r(require('../page/login/login')), 'login');
-const manage = r => require.ensure([], () => r(require('../page/manage/manage')), 'manage');
-const home = r => require.ensure([], () => r(require('../page/content/home')), 'home');
-const AddArt = r => require.ensure([], () => r(require('../page/content/AddArt')), 'AddArt');
-const AddSay = r => require.ensure([], () =>r(require('../page/content/AddSay')), 'AddSay');
-const AddLog = r => require.ensure([], () =>r(require('../page/content/AddLog')), 'AddLog');
-const ArtList = r => require.ensure([], () => r(require('../page/content/ArtList')), 'ArtList');
-const SayList = r => require.ensure([], () => r(require('../page/content/SayList')), 'SayList');
-const LogList = r => require.ensure([], () => r(require('../page/content/LogList')), 'LogList');
-const AddCol = r => require.ensure([], () => r(require('../page/content/AddCol')), 'AddCol');
-const ColList = r => require.ensure([], () => r(require('../page/content/ColList')), 'ColList');
-const AddUser = r => require.ensure([], () => r(require('../page/content/AddUser')), 'AddUser');
-const UserList = r => require.ensure([], () => r(require('../page/content/UserList')), 'UserList');
-const ArtComment = r => require.ensure([], () => r(require('../page/content/ArtComment')), 'ArtComment');
-const replyArt = r => require.ensure([], () => r(require('../page/content/replyArt')), 'replyArt');
-const SayComment = r => require.ensure([], () => r(require('../page/content/SayComment')), 'SayComment');
-const replySay = r => require.ensure([], () => r(require('../page/content/replySay')), 'replySay');
-const LogComment = r => require.ensure([], () => r(require('../page/content/LogComment')), 'LogComment');
-const replyLog = r => require.ensure([], () => r(require('../page/content/replyLog')), 'replyLog');
-const BoardComment = r => require.ensure([], () => r(require('../page/content/BoardComment')), 'BoardComment');
-const replyBoard = r => require.ensure([], () => r(require('../page/content/replyBoard')), 'replyBoard');
-const Explain = r => require.ensure([], () => r(require('../page/content/Explain')), 'Explain');
-const ExplainList = r => require.ensure([], () => r(require('../page/content/ExplainList')), 'ExplainList');
+import login from "../page/login/login";
+import manage from "../page/manage/manage";
+import home from "../page/content/home";
+import AddArt from "../page/content/AddArt";
+import AddSay from "../page/content/AddSay";
+import AddLog from "../page/content/AddLog";
+import ArtList from "../page/content/ArtList";
+import SayList from "../page/content/SayList";
+import LogList from "../page/content/LogList";
+import AddCol from "../page/content/AddCol";
+import ColList from "../page/content/ColList";
+import AddUser from "../page/content/AddUser";
+import UserList from "../page/content/UserList";
+import ArtComment from "../page/content/ArtComment";
+import replyArt from "../page/content/replyArt";
+import SayComment from "../page/content/SayComment";
+import replySay from "../page/content/replySay";
+import LogComment from "../page/content/LogComment";
+import replyLog from  "../page/content/replyLog";
+import BoardComment from "../page/content/BoardComment";
+import replyBoard from "../page/content/replyBoard";
+import Explain from "../page/content/Explain";
+import ExplainList from "../page/content/ExplainList";
 
 export default new Router({
   routes: [
