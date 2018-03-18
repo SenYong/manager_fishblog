@@ -31,7 +31,7 @@
                 </el-table-column>
                 <el-table-column label="评论内容">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.lc_content }}</span>
+                    <span v-html="emoji(scope.row.lc_content)"></span>
                   </template>
                 </el-table-column>
                 <el-table-column label="地址">

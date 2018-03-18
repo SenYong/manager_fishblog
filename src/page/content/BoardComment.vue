@@ -21,7 +21,7 @@
                 </el-table-column>
                 <el-table-column label="留言内容">
                   <template slot-scope="scope">
-                    <span>{{ scope.row.b_content }}</span>
+                    <span v-html="emoji(scope.row.b_content)"></span>
                   </template>
                 </el-table-column>
                 <el-table-column label="留言时间">

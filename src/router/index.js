@@ -33,8 +33,8 @@ export default new Router({
         component: login
     },
     {
-    	  path: '/manage',
-    	  component: manage,
+    	path: '/manage',
+    	component: manage,
         name: '',
         children: [{
            path: '',
