@@ -7,7 +7,7 @@
  *
 */
 //线下
-var baseUrl = 'http://www.myblog.com';
+var baseUrl = 'http://www.fishblogs.top';
 //线上
 //var baseUrl = 'http://www.fishblogs.top';
 
